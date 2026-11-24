@@ -30,6 +30,34 @@ overrides it. An option whose value is not a variable — a slot, a symbol macro
 over one — is registered with `register-option` and a `:reader` / `:writer`
 pair.
 
+## Saving and loading settings
+
+A settings file records how a configuration differs from the defaults: only
+the options not at their default are saved. Loading one sets those and puts
+every other registered option back to its default, so a file always gives the
+same configuration. Pass `:reset nil` to layer a file on top instead.
+
+```lisp
+(setf clopt:*settings-directory* #p"~/.myapp/settings/")
+(clopt:save-settings "work")          ; ~/.myapp/settings/work.settings
+(clopt:settings-plan "work")          ; what loading would change, without changing it
+(clopt:load-settings "work")
+(clopt:settings-names)                ; => ("work")
+```
+
+The file is Lisp data, never code, read with `*read-eval*` off:
+
+```lisp
+(:clopt-settings 1)
+("CONCEPTUAL-GRAPHS" "*ALIGNMENT-STRATEGY*" :individuals)
+```
+
+Options are named by package and symbol name as strings, so reading a file
+interns nothing. An entry for a system that isn't loaded is skipped and kept
+when the file is saved over; a value not of its option's type is refused. A
+set's name is letters, digits, space, `-` and `_` only, so a name can't reach
+outside the directory. Functions take a name or a pathname.
+
 **Not an option:** a variable a function binds for its own purposes. Setting
 it globally does not reach the function that binds it.
 

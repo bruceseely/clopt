@@ -10,7 +10,8 @@ and set them safely."
   :version "0.1.0"
   :serial t
   :components ((:file "package")
-               (:file "clopt"))
+               (:file "clopt")
+               (:file "settings"))
   :in-order-to ((test-op (test-op "clopt/tests"))))
 
 (defsystem "clopt/tests"
